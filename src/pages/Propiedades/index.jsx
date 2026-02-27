@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import { useAppStore } from '../../store/useAppStore'
 import { CheckIcon } from '../../components/icons'
+import { PropiedadesMap } from '../../components/PropiedadesMap'
 
 export function PropiedadesPage() {
   const [search, setSearch] = useState('')
@@ -44,7 +45,8 @@ export function PropiedadesPage() {
           <option value="ocupado">Ocupadas</option>
         </select>
       </div>
-      <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div className="grid gap-6 lg:grid-cols-[1fr,1fr]">
+        <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm">
         {isLoading ? (
           <div className="p-8 text-center text-slate-500">Cargando...</div>
         ) : (
@@ -95,6 +97,10 @@ export function PropiedadesPage() {
             </tbody>
           </table>
         )}
+        </div>
+        <div className="lg:min-h-[500px]">
+          <PropiedadesMap propiedades={propiedades} />
+        </div>
       </div>
     </div>
   )
