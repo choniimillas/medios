@@ -1,6 +1,7 @@
 import { useMemo, useCallback, useState } from 'react'
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api'
 import { MapContainer, TileLayer, Marker as LeafletMarker, Popup, useMap } from 'react-leaflet'
+import { useTranslation } from 'react-i18next'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -34,6 +35,7 @@ function LeafletMapBounds({ valid }) {
 }
 
 function LeafletMap({ propiedades, selectedPropiedades = [] }) {
+  const { t } = useTranslation()
   const valid = parseLatLong(propiedades)
   const selectedValid = valid.filter(p => selectedPropiedades.includes(p.id))
 
@@ -64,7 +66,7 @@ function LeafletMap({ propiedades, selectedPropiedades = [] }) {
                   <strong className="text-sm text-slate-900">{p.ref_n}</strong>
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${p.disponible === 'Disponible' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
                     }`}>
-                    {p.disponible}
+                    {p.disponible === 'Disponible' ? t('common.disponible') : t('common.ocupado')}
                   </span>
                 </div>
                 <div className="space-y-1 text-xs text-slate-600">
@@ -72,17 +74,17 @@ function LeafletMap({ propiedades, selectedPropiedades = [] }) {
                   <p>{p.localidad}</p>
                   <div className="mt-2 flex items-center gap-3 border-t border-slate-50 pt-1">
                     <div>
-                      <span className="block text-[10px] text-slate-400">Dimensiones</span>
+                      <span className="block text-[10px] text-slate-400">{t('properties.dimensions')}</span>
                       <span className="font-medium">{p.base}m x {p.altura}m</span>
                     </div>
                     <div>
-                      <span className="block text-[10px] text-slate-400">Superficie</span>
+                      <span className="block text-[10px] text-slate-400">{t('properties.area')}</span>
                       <span className="font-medium">{p.m2}m²</span>
                     </div>
                   </div>
                   {p.precio_mensual != null && (
                     <div className="mt-2 text-right font-bold text-blue-600">
-                      ${Number(p.precio_mensual).toLocaleString()}/mes
+                      ${Number(p.precio_mensual).toLocaleString()}/{t('common.mo', 'mes')}
                     </div>
                   )}
                 </div>
@@ -99,6 +101,7 @@ const mapContainerStyle = { width: '100%', height: '100%', minHeight: 400 }
 const rosarioCenter = { lat: -32.9468, lng: -60.6393 }
 
 function GoogleMapView({ propiedades, selectedPropiedades = [] }) {
+  const { t } = useTranslation()
   const [selectedId, setSelectedId] = useState(null)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
   const { isLoaded, loadError } = useJsApiLoader({ googleMapsApiKey: apiKey || '' })
@@ -123,8 +126,8 @@ function GoogleMapView({ propiedades, selectedPropiedades = [] }) {
     [bounds, valid.length, selectedValid.length]
   )
 
-  if (loadError) return <MapFallback message="Error al cargar Google Maps" />
-  if (!isLoaded) return <MapFallback message="Cargando mapa..." />
+  if (loadError) return <MapFallback message={t('common.error_loading_maps', 'Error al cargar Google Maps')} />
+  if (!isLoaded) return <MapFallback message={t('common.loading')} />
 
   return (
     <GoogleMap
@@ -154,7 +157,7 @@ function GoogleMapView({ propiedades, selectedPropiedades = [] }) {
                     <strong className="text-sm text-slate-900">{p.ref_n}</strong>
                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${p.disponible === 'Disponible' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
                       }`}>
-                      {p.disponible}
+                      {p.disponible === 'Disponible' ? t('common.disponible') : t('common.ocupado')}
                     </span>
                   </div>
                   <div className="space-y-1 text-xs text-slate-600">
@@ -162,17 +165,17 @@ function GoogleMapView({ propiedades, selectedPropiedades = [] }) {
                     <p>{p.localidad}</p>
                     <div className="mt-2 flex items-center gap-3 border-t border-slate-50 pt-1">
                       <div>
-                        <span className="block text-[10px] text-slate-400">Dimensiones</span>
+                        <span className="block text-[10px] text-slate-400">{t('properties.dimensions')}</span>
                         <span className="font-medium">{p.base}m x {p.altura}m</span>
                       </div>
                       <div>
-                        <span className="block text-[10px] text-slate-400">Superficie</span>
+                        <span className="block text-[10px] text-slate-400">{t('properties.area')}</span>
                         <span className="font-medium">{p.m2}m²</span>
                       </div>
                     </div>
                     {p.precio_mensual != null && (
                       <div className="mt-2 text-right font-bold text-blue-600">
-                        ${Number(p.precio_mensual).toLocaleString()}/mes
+                        ${Number(p.precio_mensual).toLocaleString()}/{t('common.mo', 'mes')}
                       </div>
                     )}
                   </div>

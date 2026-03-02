@@ -26,3 +26,15 @@ export async function generatePdf(presupuestoId) {
   if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`)
   return data
 }
+
+export async function approveBudget(payload) {
+  const res = await fetch(`${API_BASE}/approveBudget`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`)
+  return data
+}
+
