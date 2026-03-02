@@ -9,6 +9,30 @@ export function PropiedadesPage() {
   const [search, setSearch] = useState('')
   const [disponibleFilter, setDisponibleFilter] = useState('all')
   const selectedPropiedades = useAppStore((s) => s.selectedPropiedades)
+  const togglePropiedad = useAppStore((s) => s.togglePropiedad)
+
+  const { data: propiedades = [], isLoading } = useQuery({
+    queryKey: ['propiedades', search, disponibleFilter],
+    queryFn: async () => {
+      let query = supabase
+        .from('propiedades')
+        .select('*')
+        .order('ref_n', { ascending: true })
+
+      if (search) {
+        query = query.or(`ref_n.ilike.%${search}%,ubicacion.ilike.%${search}%,localidad.ilike.%${search}%`)
+      }
+
+      if (disponibleFilter !== 'all') {
+        query = query.eq('disponible', disponibleFilter === 'disponible' ? 'Disponible' : 'Ocupado')
+      }
+
+      const { data, error } = await query
+      if (error) throw error
+      return data
+    }
+  })
+
   const isAllSelected = propiedades.length > 0 && propiedades.every(p => selectedPropiedades.includes(p.id))
 
   const toggleAll = () => {
@@ -136,13 +160,13 @@ export function PropiedadesPage() {
           )}
         </div>
         <div className="h-[500px] lg:h-auto overflow-hidden rounded-lg border border-slate-200">
-          <PropiedadesMap propiedades={propiedades} />
+          <PropiedadesMap propiedades={propiedades} selectedPropiedades={selectedPropiedades} />
         </div>
       </div>
 
       {/* Floating Action Bar */}
       {selectedPropiedades.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 rounded-full bg-slate-900 px-6 py-3 text-white shadow-2xl ring-1 ring-white/10 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-6 left-1/2 z-[1000] flex -translate-x-1/2 items-center gap-4 rounded-full bg-slate-900 px-6 py-3 text-white shadow-2xl ring-1 ring-white/10 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="flex items-center gap-2 border-r border-slate-700 pr-4">
             <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-[10px] font-bold">
               {selectedPropiedades.length}
